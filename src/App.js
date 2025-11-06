@@ -1,3 +1,41 @@
+import { scanMarket, fetchRedditSentiment, getSqueezeWatchlist, getBreakoutWatchlist } from './dataService';
+
+// Replace the scanMarket function with this:
+const scanMarket = async () => {
+  setIsScanning(true);
+  setShowResults(false);
+  
+  try {
+    const currentTime = new Date();
+    setScanTime(currentTime);
+    
+    // Scan for squeeze stocks
+    const squeezeTickers = getSqueezeWatchlist();
+    const squeezeResults = await scanMarket(squeezeTickers, squeezeFilters);
+    
+    // Scan for breakout stocks  
+    const breakoutTickers = getBreakoutWatchlist();
+    const breakoutResults = await scanMarket(breakoutTickers, breakoutFilters);
+    
+    // Enhance with sentiment data
+    for (let stock of squeezeResults) {
+      const sentiment = await fetchRedditSentiment(stock.ticker);
+      stock.redditMentions = sentiment.mentions;
+      stock.redditSentiment = sentiment.sentiment;
+    }
+    
+    setSqueezeStocks(squeezeResults);
+    setBreakoutStocks(breakoutResults);
+    setIsScanning(false);
+    setShowResults(true);
+  } catch (error) {
+    console.error('Scan error:', error);
+    setIsScanning(false);
+    alert('Error scanning market. Check console for details.');
+  }
+};
+```
+
 import React, { useState } from 'react';
 import { TrendingUp, AlertTriangle, ThumbsUp, ThumbsDown, RefreshCw, Shield, BarChart3, Activity, MessageSquare, Settings, Send, Sparkles, Calendar, Zap, Target, Bell, Star, Mail, Layers } from 'lucide-react';
 
