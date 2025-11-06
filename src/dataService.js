@@ -1,5 +1,9 @@
 // Data service to fetch real stock data
 
+const ALPHA_VANTAGE_KEY = process.env.REACT_APP_ALPHA_VANTAGE_KEY;
+const FINNHUB_KEY = process.env.REACT_APP_FINNHUB_KEY;
+```
+
 const ALPHA_VANTAGE_KEY = 'YOUR_ALPHA_VANTAGE_KEY'; // Replace with your key
 const FINNHUB_KEY = 'YOUR_FINNHUB_KEY'; // Replace with your key
 
