@@ -1,4 +1,7 @@
 import { scanMarket, fetchRedditSentiment, getSqueezeWatchlist, getBreakoutWatchlist } from './dataService';
+port React, { useState } from 'react';
+import { TrendingUp, AlertTriangle, ThumbsUp, ThumbsDown, RefreshCw, Shield, BarChart3, Activity, MessageSquare, Settings, Send, Sparkles, Calendar, Zap, Target, Bell, Star, Mail, Layers } from 'lucide-react';
+import { scanMarket as scanMarketAPI, getSqueezeWatchlist, getBreakoutWatchlist } from './dataService';
 
 
 import React, { useState } from 'react';
@@ -52,6 +55,7 @@ const ShortSqueezeDetector = () => {
     }
   };
 
+const s
 const scanMarket = async () => {
   setIsScanning(true);
   setShowResults(false);
@@ -60,29 +64,31 @@ const scanMarket = async () => {
     const currentTime = new Date();
     setScanTime(currentTime);
     
-    // Scan for squeeze stocks
+    // Get stock lists
     const squeezeTickers = getSqueezeWatchlist();
-    const squeezeResults = await scanMarket(squeezeTickers, squeezeFilters);
-    
-    // Scan for breakout stocks  
     const breakoutTickers = getBreakoutWatchlist();
-    const breakoutResults = await scanMarket(breakoutTickers, breakoutFilters);
     
-    // Enhance with sentiment data
-    for (let stock of squeezeResults) {
-      const sentiment = await fetchRedditSentiment(stock.ticker);
-      stock.redditMentions = sentiment.mentions;
-      stock.redditSentiment = sentiment.sentiment;
-    }
+    console.log('Starting scan...');
     
-    setSqueezeStocks(squeezeResults);
-    setBreakoutStocks(breakoutResults);
+    // Scan squeeze stocks
+    const squeezeResults = await scanMarketAPI(squeezeTickers, squeezeFilters);
+    console.log(`Found ${squeezeResults.length} squeeze stocks`);
+    
+    // Scan breakout stocks
+    const breakoutResults = await scanMarketAPI(breakoutTickers, breakoutFilters);
+    console.log(`Found ${breakoutResults.length} breakout stocks`);
+    
+    // Update results
+    setSqueezeStocks(squeezeResults.slice(0, 10)); // Top 10
+    setBreakoutStocks(breakoutResults.slice(0, 10)); // Top 10
+    
     setIsScanning(false);
     setShowResults(true);
+    
   } catch (error) {
     console.error('Scan error:', error);
+    alert('Error scanning market. Check console for details. Make sure API keys are set.');
     setIsScanning(false);
-    alert('Error scanning market. Check console for details.');
   }
 };
 ```
